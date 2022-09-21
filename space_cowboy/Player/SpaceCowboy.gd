@@ -12,57 +12,38 @@ var animationPlayer = null
 var looking_rotation = 1
 var x_increment = 15
 var y_increment = 0
+var direction = 'Right'
+var movement = 'Idle'
+
 
 func _ready():
 	animationPlayer = $AnimationPlayer
+
 
 func _physics_process(delta):
 	move_state(delta)
 	shoot(delta)
 
+
 func move_state(delta):
 	var input_vector = get_input_vector()
 	
-	if input_vector != Vector2.ZERO:
-		if input_vector.x > 0 and input_vector.y == 0:
-#			print("MOVING RIGHT")
-			animationPlayer.play("WalkRight")
-			looking_rotation = 0
-			x_increment = 15
-			y_increment = 0
-			
-		elif input_vector.x < 0 and input_vector.y == 0:
-			animationPlayer.play("WalkLeft")
-			looking_rotation = 2
-			x_increment = -15
-			y_increment = 0
+	set_moving_variables(input_vector)
+	animationPlayer.play(movement+direction)
 
-		elif input_vector.y > 0 and input_vector.x == 0:
-			animationPlayer.play("WalkDown")
-			looking_rotation = 1
-			y_increment = 15
-			x_increment = 0
-			
-		elif input_vector.y < 0 and input_vector.x == 0:
-			animationPlayer.play("WalkUp")
-			looking_rotation = 3
-			y_increment = -15
-			x_increment = 0
-			
+	if movement == 'Walk':
 		velocity = move(delta, input_vector)
 	else:
-
 		velocity = velocity.move_toward(Vector2.ZERO, FRICTION * delta)
-	
+
 
 func get_input_vector():
 	var input_vector = Vector2.ZERO
 	input_vector.x = Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left")
 	input_vector.y = Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
 	input_vector = input_vector.normalized()
-	
 	return input_vector
-	
+
 
 func move(delta, input_vector):
 	velocity = velocity.move_toward(input_vector * MAX_SPEED, ACCELERATION * delta)
@@ -72,8 +53,8 @@ func move(delta, input_vector):
 		pass
 	else:
 		velocity = move_and_slide(velocity)
-	
 	return velocity
+
 
 func shoot(delta):
 	if Input.is_action_just_pressed("shoot"):
@@ -83,3 +64,34 @@ func shoot(delta):
 		b.position.x += x_increment
 		b.position.y += y_increment
 		b.rotation = deg2rad(90*looking_rotation)
+
+
+func set_moving_variables(input_vector):
+	if input_vector != Vector2.ZERO:
+		movement = 'Walk'
+	else:
+		movement = 'Idle'
+
+	if input_vector.x > 0 and input_vector.y == 0:
+		direction = 'Right'
+		looking_rotation = 0
+		x_increment = 15
+		y_increment = 0
+
+	elif input_vector.x < 0 and input_vector.y == 0:
+		direction = 'Left'
+		looking_rotation = 2
+		x_increment = -15
+		y_increment = 0
+
+	elif input_vector.y > 0 and input_vector.x == 0:
+		direction = 'Down'
+		looking_rotation = 1
+		y_increment = 15
+		x_increment = 0
+
+	elif input_vector.y < 0 and input_vector.x == 0:
+		direction = 'Up'
+		looking_rotation = 3
+		y_increment = -15
+		x_increment = 0
