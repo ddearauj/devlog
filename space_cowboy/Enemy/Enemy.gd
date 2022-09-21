@@ -5,11 +5,14 @@ var velocity = Vector2.ZERO
 var path: Array = []
 var levelNav: Navigation2D = null
 var player = null
+var animationPlayer = null
 
 onready var line2d = $Line2D
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	animationPlayer = $AnimationPlayer
+	animationPlayer.play("Walk")
 	yield(get_tree(), "idle_frame")
 	var tree = get_tree()
 	if tree.has_group("LevelNavigation"):
