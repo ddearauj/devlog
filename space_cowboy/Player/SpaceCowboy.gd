@@ -9,7 +9,7 @@ export var FRICTION = 10000
 
 var velocity = Vector2.ZERO
 var animationPlayer = null
-var looking_rotation = 1
+var looking_rotation = 0
 var x_increment = 15
 var y_increment = 0
 var direction = 'Right'
